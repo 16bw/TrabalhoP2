@@ -16,7 +16,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
 
     public Aluno findByNome(String nome);
 
-    @Query("SELECT a FROM Aluno a LEFT JOIN FETCH a.cursos WHERE a.email = :email")
+    @Query("SELECT a FROM Aluno a JOIN FETCH a.cursos WHERE a.email = :email")
     Optional<Aluno> findByEmailWithCursos(@Param("email") String email);
-
+    
 }

@@ -28,7 +28,7 @@ public class Aluno {
     @Column(nullable = false)
     private String senha;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "matriculas", joinColumns = @JoinColumn(name = "aluno_id"), inverseJoinColumns = @JoinColumn(name = "curso_id"))
     private Set<Curso> cursos = new HashSet<>();
 }
