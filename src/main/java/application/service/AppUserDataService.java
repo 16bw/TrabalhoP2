@@ -16,21 +16,19 @@ public class AppUserDataService implements UserDetailsService {
     private AlunoRepository alunoRepo;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Aluno aluno = alunoRepo.findByNome(username);
+public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    // Alterando para buscar por email em vez de nome
+    Aluno aluno = alunoRepo.findByEmail(username)
+            .orElseThrow(() -> new UsernameNotFoundException("Aluno Não Encontrado"));
+    
+    UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
+        .username(aluno.getEmail())
+        .password(aluno.getSenha())
+        .roles("USER")
+        .build();
 
-        if(aluno == null) {
-            throw new UsernameNotFoundException("Aluno Não Encontrado");
-        }
-
-        UserDetails userDetails = org.springframework.security.core.userdetails.User.builder()
-            .username(aluno.getNome())
-            .password(aluno.getSenha())
-            .roles("USER")
-            .build();
-
-        return userDetails;
-    }
+    return userDetails;
+}
 
 
 }   

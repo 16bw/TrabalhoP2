@@ -1,0 +1,115 @@
+### Variáveis globais
+@baseUrl = https://symmetrical-sniffle-4j695pxpr657cj4pg-8080.app.github.dev/api
+@authToken = {{login.response.body.token}}
+
+### Registrar novo usuário
+# @name registro
+POST {{baseUrl}}/auth/registro
+Content-Type: application/json
+
+{
+  "nome": "Usuário Teste",
+  "email": "usuario3@teste.com",
+  "senha": "senha123"
+}
+
+### Login para obter token JWT
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "usuario3@teste.com",
+  "senha": "senha123"
+}
+
+
+
+### Obter detalhes de um aluno
+GET {{baseUrl}}/alunos/1
+Authorization: Bearer {{authToken}}
+
+### OPERAÇÕES DE CURSOS ###
+
+### Criar novo curso
+# @name criarCurso
+POST {{baseUrl}}/cursos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Curso de Spring Boot",
+  "descricao": "Aprenda a desenvolver APIs RESTful com Spring Boot",
+  "cargaHoraria": 40
+}
+
+### Listar todos os cursos
+GET {{baseUrl}}/cursos
+Authorization: Bearer {{authToken}}
+
+### Obter curso específico
+GET {{baseUrl}}/cursos/1
+Authorization: Bearer {{authToken}}
+
+### Atualizar curso
+PUT {{baseUrl}}/cursos/1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "nome": "Curso de Spring Boot Atualizado",
+  "descricao": "Curso completo de Spring Boot com JPA, Security e JWT",
+  "cargaHoraria": 60
+}
+
+### Excluir curso
+DELETE {{baseUrl}}/cursos/1
+Authorization: Bearer {{authToken}}
+
+### OPERAÇÕES DE MÓDULOS ###
+
+### Criar novo módulo para um curso
+POST {{baseUrl}}/cursos/1/modulos
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "titulo": "Introdução ao Spring Boot",
+  "descricao": "Fundamentos e configuração inicial do Spring Boot"
+}
+
+### Listar módulos de um curso
+GET {{baseUrl}}/cursos/1/modulos
+Authorization: Bearer {{authToken}}
+
+### Obter detalhes de um módulo
+GET {{baseUrl}}/modulos/1
+Authorization: Bearer {{authToken}}
+
+### Atualizar módulo
+PUT {{baseUrl}}/modulos/1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "titulo": "Introdução ao Spring Boot - Atualizado",
+  "descricao": "Fundamentos, configuração e boas práticas com Spring Boot"
+}
+
+### Excluir módulo
+DELETE {{baseUrl}}/modulos/1
+Authorization: Bearer {{authToken}}
+
+### OPERAÇÕES DE MATRÍCULAS ###
+
+### Matricular aluno em curso
+POST {{baseUrl}}/alunos/matricular/2
+Authorization: Bearer {{authToken}}
+
+### Listar cursos do aluno
+GET {{baseUrl}}/alunos/cursos
+Authorization: Bearer {{authToken}}
+
+### Cancelar matrícula
+DELETE {{baseUrl}}/alunos/cancelar/1
+Authorization: Bearer {{authToken}}

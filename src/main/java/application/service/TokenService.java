@@ -15,35 +15,38 @@ import application.model.Aluno;
 
 @Service
 public class TokenService {
-    private String tokenKey = "123456789";
     
-    private Instant expirationDate() {
-        return LocalDateTime.now().plusHours(2).toInstant(ZoneOffset.of("-03:00"));  
-    }
 
+    private String secret = "12345678";
+    
     public String generateToken(Aluno aluno) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(tokenKey);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
-                .withIssuer("FATEC API")
-                .withSubject(aluno.getNome())
-                .withExpiresAt(this.expirationDate())
-                .sign(algorithm);
+                    .withIssuer("API Cursos")
+                    .withSubject(aluno.getEmail())
+                    .withClaim("id", aluno.getId())
+                    .withExpiresAt(getExpirationDate())
+                    .sign(algorithm);
         } catch (JWTCreationException exception) {
-            throw new RuntimeException("Erro ao gerar JWT");
+            throw new RuntimeException("Erro ao gerar token", exception);
         }
     }
-
-    public String getSuject(String token) {
+    
+    public String getSuject(String tokenJWT) {
         try {
-            Algorithm algorithm = Algorithm.HMAC256(tokenKey);
+            Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.require(algorithm)
-                .withIssuer("FATEC API")
-                .build()
-                .verify(token)
-                .getSubject();
+                    .withIssuer("API Cursos")
+                    .build()
+                    .verify(tokenJWT)
+                    .getSubject();
         } catch (JWTVerificationException exception) {
-            throw new RuntimeException("Token Inválido");
+            throw new RuntimeException("Token inválido ou expirado", exception);
         }
+    }
+    
+    private Instant getExpirationDate() {
+        return LocalDateTime.now().plusHours(24).toInstant(ZoneOffset.of("-03:00"));
     }
 }

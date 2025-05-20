@@ -5,6 +5,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,12 +48,13 @@ public class AlunoService {
     }
 
     public AlunoDTO getAlunoById(Long id) {
+
         Optional<Aluno> alunoOpt = alunoRepository.findById(id);
-        
+
         if (alunoOpt.isEmpty()) {
             throw new NoSuchElementException("Aluno não encontrado com id: " + id);
         }
-        
+
         return new AlunoDTO(alunoOpt.get());
     }
 
@@ -65,7 +67,7 @@ public class AlunoService {
         if (alunoOpt.isEmpty()) {
             throw new NoSuchElementException("Aluno não encontrado");
         }
-        
+
         Optional<Curso> cursoOpt = cursoRepository.findById(cursoId);
         if (cursoOpt.isEmpty()) {
             throw new NoSuchElementException("Curso não encontrado com id: " + cursoId);
@@ -73,10 +75,10 @@ public class AlunoService {
 
         Aluno aluno = alunoOpt.get();
         Curso curso = cursoOpt.get();
-        
+
         aluno.getCursos().add(curso);
         alunoRepository.save(aluno);
-        
+
         return new GenericResponse("Matriculado com sucesso no curso");
     }
 
@@ -89,7 +91,7 @@ public class AlunoService {
         if (alunoOpt.isEmpty()) {
             throw new NoSuchElementException("Aluno não encontrado");
         }
-        
+
         Optional<Curso> cursoOpt = cursoRepository.findById(cursoId);
         if (cursoOpt.isEmpty()) {
             throw new NoSuchElementException("Curso não encontrado com id: " + cursoId);
@@ -97,25 +99,28 @@ public class AlunoService {
 
         Aluno aluno = alunoOpt.get();
         Curso curso = cursoOpt.get();
-        
+
         aluno.getCursos().remove(curso);
         alunoRepository.save(aluno);
-        
+
         return new GenericResponse("Matrícula cancelada com sucesso");
     }
 
+    @Transactional(readOnly = true)
     public List<CursoDTO> getCursosDoAluno() {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = userDetails.getUsername();
 
-        Optional<Aluno> alunoOpt = alunoRepository.findByEmail(email);
+        Optional<Aluno> alunoOpt = alunoRepository.findByEmailWithCursos(email);
+
         if (alunoOpt.isEmpty()) {
             throw new NoSuchElementException("Aluno não encontrado");
         }
 
         Aluno aluno = alunoOpt.get();
+
         return aluno.getCursos().stream()
-                .map(CursoDTO::new)
+                .map(curso -> new CursoDTO(curso))
                 .collect(Collectors.toList());
     }
 }
